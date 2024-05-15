@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tttturtle-russ/Nyx/internel/parser"
+	"github.com/tttturtle-russ/Nyx/internel/display"
 	"os"
 )
 
@@ -26,8 +26,13 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		elf := parser.NewElf(File)
-		parser.GetTextSection(elf)
+		text := []string{"Hello", "World", "This", "Is", "Nyx"}
+		for i := 0; i < 0xfffff; i++ {
+			text = append(text, text[i%5])
+		}
+		display.NewScreen(text, nil, nil).Display()
+		//elf := parser.NewElf(File)
+		//parser.GetTextSection(elf)
 	},
 }
 

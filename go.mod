@@ -5,6 +5,7 @@ go 1.22
 require github.com/gdamore/tcell/v2 v2.7.4
 
 require (
+	github.com/bnagy/gapstone v0.0.0-20190828052830-ede92aaeaba7 // indirect
 	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
