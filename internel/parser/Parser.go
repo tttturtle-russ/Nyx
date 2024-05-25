@@ -13,5 +13,4 @@ type Disassembler struct {
 
 func (d *Disassembler) Disassemble() {
 	d.parser.Parse()
-	d.engine.Disasm()
 }

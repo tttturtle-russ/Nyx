@@ -18,6 +18,7 @@ func NewElf(filePath string) *Elf {
 	if err != nil {
 		panic(err)
 	}
+	parser.Parse()
 	return &Elf{
 		elf: parser,
 	}
@@ -48,8 +49,15 @@ func (e *Elf) StartAddress() uint64 {
 }
 
 func (e *Elf) Code() []byte {
-	for _, symbol := range e.elf.F.NamedSymbols {
-		fmt.Println(symbol)
+	//for _, symbol := range e.elf.F.NamedSymbols {
+	//	fmt.Println(symbol.Name)
+	//}
+	for _, section := range e.elf.F.Sections64 {
+		if section.SectionName == ".text" {
+			fmt.Printf("%X\n", section.Addr)
+			data, _ := section.Data()
+			return data
+		}
 	}
 	return nil
 }
