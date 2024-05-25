@@ -3,19 +3,22 @@ package display
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"strconv"
 )
 
 type Screen struct {
-	grid *tview.Grid
+	app      *tview.Application
+	grid     *tview.Grid
+	codeView *tview.TextView
+	funcView *tview.TextView
+	memView  *tview.TextView
+	miscView *tview.TextView
 }
 
-func NewScreen(
+func InitScreen(
 	text, funcs, basicInfo []string,
 ) *Screen {
-	//grid := tview.NewGrid().
-	//	SetSize(2, 2, 0, 0).
-	//	SetBorders(true).
-	//	AddItem(tview.NewTextView(), 0, 0, 0, 0, 0, 0, true)
+	app := tview.NewApplication()
 	newPrimitive := func(text string) tview.Primitive {
 		t := tview.NewTextView()
 		t.SetTextAlign(tview.AlignCenter).
@@ -37,37 +40,62 @@ func NewScreen(
 			})
 		return t
 	}
-	menu := newPrimitive("Menu")
-	//main := newPrimitive("Main content\n" + strings.Join(text, "\n"))
-	main := NewTextArea(text).Build()
-	sideBar := newPrimitive("Side Bar")
-
+	funcView := InitFuncView(funcs).Build()
+	codeView := NewCodeView(text).Build()
+	codeView.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyRune:
+			switch event.Rune() {
+			case 'j':
+				row, column := codeView.GetScrollOffset()
+				codeView.ScrollTo(row+1, column)
+				codeView.Highlight(strconv.Itoa(row + 1))
+				return nil
+			case 'k':
+				row, column := codeView.GetScrollOffset()
+				codeView.ScrollTo(row-1, column)
+				codeView.Highlight(strconv.Itoa(row - 1))
+				return nil
+			}
+		case tcell.KeyCtrlL:
+			app.SetFocus(funcView)
+		default:
+			return event
+		}
+		return nil
+	})
+	memView := newPrimitive("Side Bar")
+	miscView := newPrimitive("Bottom")
 	grid := tview.NewGrid().
 		SetRows(10, 0, 10).
 		SetColumns(30, 0, 30).
 		SetBorders(true)
 
-	grid.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Rune() {
-		case 'h':
-			modal := tview.NewModal().SetText("Help")
-
-		}
-	})
+	//grid.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	//	switch event.Rune() {
+	//	case 'h':
+	//		modal := tview.NewModal().SetText("Help")
+	//
+	//	}
+	//})
 
 	// Layout for screens wider than 100 cells.
-	grid.AddItem(main, 0, 0, 6, 2, 0, 100, true).
-		AddItem(menu, 0, 2, 6, 1, 0, 100, false).
-		AddItem(sideBar, 6, 2, 4, 1, 0, 100, false).
-		AddItem(newPrimitive("Bottom"), 6, 0, 4, 2, 0, 100, false)
+	grid.AddItem(codeView, 0, 0, 6, 2, 0, 100, true).
+		AddItem(funcView, 0, 2, 6, 1, 0, 100, false).
+		AddItem(memView, 6, 2, 4, 1, 0, 100, false).
+		AddItem(miscView, 6, 0, 4, 2, 0, 100, false)
 
-	return &Screen{grid: grid}
+	return &Screen{
+		app:      app,
+		grid:     grid,
+		codeView: codeView,
+		funcView: funcView,
+	}
 }
 
 func (s *Screen) Display() {
-	err := tview.NewApplication().SetRoot(s.grid, true).Run()
+	err := s.app.SetRoot(s.grid, true).Run()
 	if err != nil {
 		return
 	}
-	tview.NewApplication().
 }
