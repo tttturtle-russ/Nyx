@@ -2,15 +2,15 @@ package parser
 
 import (
 	"fmt"
+	"github.com/bnagy/gapstone"
 	"github.com/saferwall/elf"
-	"github.com/tidwall/gjson"
 )
 
 type Elf struct {
-	elf  *elf.Parser
-	os   string
-	arch int
-	mode int
+	elf   *elf.Parser
+	arch  int
+	mode  int
+	_type string
 }
 
 func NewElf(filePath string) *Elf {
@@ -18,17 +18,38 @@ func NewElf(filePath string) *Elf {
 	if err != nil {
 		panic(err)
 	}
-	err = parser.Parse()
+	return &Elf{
+		elf: parser,
+	}
+}
+
+func (e *Elf) Parse() {
+	err := e.elf.Parse()
 	if err != nil {
 		panic(err)
 	}
-	jsonString, err := parser.DumpJSON()
-	for _, symbol := range parser.F.NamedSymbols {
-		fmt.Println(symbol.Name)
+	switch e.elf.F.Machine {
+	case elf.EM_X86_64:
+		switch e.elf.F.Class() {
+		case elf.ELFCLASS64:
+			e.mode = gapstone.CS_MODE_64
+		case elf.ELFCLASS32:
+			e.mode = gapstone.CS_MODE_64
+		}
+		e.arch = gapstone.CS_ARCH_X86
+	default:
+		panic("Only support 32/64 elf file")
 	}
-	if err != nil {
-		panic(err)
+	e._type = e.elf.F.Type.String()
+}
+
+func (e *Elf) StartAddress() uint64 {
+	return e.elf.F.Entry
+}
+
+func (e *Elf) Code() []byte {
+	for _, symbol := range e.elf.F.NamedSymbols {
+		fmt.Println(symbol)
 	}
-	gjson.Get(jsonString, "")
 	return nil
 }

@@ -3,7 +3,7 @@ package parser
 import "github.com/bnagy/gapstone"
 
 type Parser interface {
-	Parse() error
+	Parse()
 }
 
 type Disassembler struct {
@@ -12,5 +12,6 @@ type Disassembler struct {
 }
 
 func (d *Disassembler) Disassemble() {
-	//d.engine.Disasm()
+	d.parser.Parse()
+	d.engine.Disasm()
 }
