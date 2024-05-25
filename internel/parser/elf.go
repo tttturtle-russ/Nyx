@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"github.com/saferwall/elf"
+	"github.com/tidwall/gjson"
 )
 
 type Elf struct {
@@ -21,7 +22,13 @@ func NewElf(filePath string) *Elf {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(parser.F.Machine.String())
-	fmt.Println(parser.DumpJSON())
+	jsonString, err := parser.DumpJSON()
+	for _, symbol := range parser.F.NamedSymbols {
+		fmt.Println(symbol.Name)
+	}
+	if err != nil {
+		panic(err)
+	}
+	gjson.Get(jsonString, "")
 	return nil
 }

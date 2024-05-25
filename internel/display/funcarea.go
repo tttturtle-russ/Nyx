@@ -26,6 +26,9 @@ func (f *FuncView) Build() *tview.TextView {
 		SetRegions(true).
 		SetScrollable(true).
 		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			if !textView.HasFocus() {
+				return event
+			}
 			switch event.Rune() {
 			case 'j':
 				row, column := textView.GetScrollOffset()
@@ -46,6 +49,8 @@ func (f *FuncView) Build() *tview.TextView {
 			default:
 				return event
 			}
-		}).SetBackgroundColor(tcell.ColorBlue)
+		}).
+		SetBackgroundColor(tcell.ColorBlue).
+		SetTitle("Func View")
 	return textView
 }

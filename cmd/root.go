@@ -4,9 +4,8 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/tttturtle-russ/Nyx/internel/display"
+	"github.com/tttturtle-russ/Nyx/internel/parser"
 	"os"
 )
 
@@ -27,13 +26,7 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		text := []string{"Hello", "World", "This", "Is", "Nyx"}
-		for i := 0; i < 0xfffff; i++ {
-			text = append(text, fmt.Sprintf(`["%d"]%s[""]`, i, text[i%5]))
-		}
-		display.InitScreen(text, []string{`["1"]func1[""]`, `["2"]func2[""]`, `["3"]func3[""]`}, nil).Display()
-		//elf := parser.NewElf(File)
-		//parser.GetTextSection(elf)
+		parser.NewElf(File)
 	},
 }
 

@@ -3,6 +3,7 @@ package display
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"strconv"
 	"strings"
 )
 
@@ -13,8 +14,8 @@ type CodeView struct {
 	focus uint64
 }
 
-// NewCodeView is the constructor of the CodeView struct.
-func NewCodeView(text []string) *CodeView {
+// InitCodeView is the constructor of the CodeView struct.
+func InitCodeView(text []string) *CodeView {
 	return &CodeView{
 		text:  text,
 		focus: 0,
@@ -29,6 +30,25 @@ func (t *CodeView) Build() *tview.TextView {
 		SetText(strings.Join(t.text, "\n")).
 		SetScrollable(true).
 		SetRegions(true).
-		SetBackgroundColor(tcell.ColorBlue)
+		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			switch event.Key() {
+			case tcell.KeyRune:
+				switch event.Rune() {
+				case 'j':
+					row, column := textView.GetScrollOffset()
+					textView.ScrollTo(row+1, column)
+					textView.Highlight(strconv.Itoa(row + 1))
+					return nil
+				case 'k':
+					row, column := textView.GetScrollOffset()
+					textView.ScrollTo(row-1, column)
+					textView.Highlight(strconv.Itoa(row - 1))
+					return nil
+				}
+			default:
+				return event
+			}
+			return nil
+		}).SetTitle("Code View")
 	return textView
 }
