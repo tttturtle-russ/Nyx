@@ -10,7 +10,7 @@ type Screen struct {
 	app      *tview.Application
 	grid     *tview.Grid
 	codeView *tview.TextView
-	funcView *tview.TextView
+	funcView *tview.List
 	memView  *tview.TextView
 	miscView *tview.TextView
 }
@@ -27,7 +27,7 @@ func InitScreen(
 			SetTitle(text)
 		return t
 	}
-	funcView := InitFuncView(funcs).Build()
+	InitFuncView(app, funcs)
 	codeView := InitCodeView(text).Build()
 
 	memView := newPrimitive("Mem View")
@@ -39,7 +39,7 @@ func InitScreen(
 
 	// Layout for screens wider than 100 cells.
 	grid.AddItem(codeView, 0, 0, 6, 2, 0, 100, true).
-		AddItem(funcView, 0, 2, 6, 1, 0, 100, false).
+		AddItem(funcList, 0, 2, 6, 1, 0, 100, false).
 		AddItem(memView, 6, 2, 4, 1, 0, 100, false).
 		AddItem(miscView, 6, 0, 4, 2, 0, 100, false)
 
@@ -54,7 +54,7 @@ func InitScreen(
 		switch event.Key() {
 		case tcell.KeyCtrlL:
 			if title == "Code View" {
-				app.SetFocus(funcView)
+				app.SetFocus(funcList)
 			} else if title == "Mem View" {
 				app.SetFocus(miscView)
 			}
@@ -74,7 +74,7 @@ func InitScreen(
 			if title == "Mem View" {
 				app.SetFocus(codeView)
 			} else if title == "Misc View" {
-				app.SetFocus(funcView)
+				app.SetFocus(funcList)
 			}
 		default:
 			return event
@@ -86,7 +86,7 @@ func InitScreen(
 		app:      app,
 		grid:     grid,
 		codeView: codeView,
-		funcView: funcView,
+		funcView: funcList,
 	}
 }
 
