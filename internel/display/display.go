@@ -16,7 +16,7 @@ type Screen struct {
 }
 
 func InitScreen(
-	text, funcs, basicInfo []string,
+	text, funcs []string,
 ) *Screen {
 	app := tview.NewApplication()
 	newPrimitive := func(text string) tview.Primitive {
@@ -38,8 +38,8 @@ func InitScreen(
 		SetBorders(true)
 
 	// Layout for screens wider than 100 cells.
-	grid.AddItem(codeView, 0, 0, 6, 2, 0, 100, true).
-		AddItem(funcList, 0, 2, 6, 1, 0, 100, false).
+	grid.AddItem(codeView, 0, 0, 6, 2, 0, 100, false).
+		AddItem(funcList, 0, 2, 6, 1, 0, 100, true).
 		AddItem(memView, 6, 2, 4, 1, 0, 100, false).
 		AddItem(miscView, 6, 0, 4, 2, 0, 100, false)
 
@@ -47,38 +47,38 @@ func InitScreen(
 	// TODO: find a better way to switch focus
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if app.GetFocus() == nil {
-			app.SetFocus(codeView)
+			app.SetFocus(funcList)
 		}
-		v, _ := app.GetFocus().(*tview.TextView)
-		title := v.GetTitle()
-		switch event.Key() {
-		case tcell.KeyCtrlL:
-			if title == "Code View" {
-				app.SetFocus(funcList)
-			} else if title == "Mem View" {
-				app.SetFocus(miscView)
-			}
-		case tcell.KeyCtrlH:
-			if title == "Func View" {
-				app.SetFocus(codeView)
-			} else if title == "Misc View" {
-				app.SetFocus(memView)
-			}
-		case tcell.KeyCtrlJ:
-			if title == "Code View" {
-				app.SetFocus(memView)
-			} else if title == "Func View" {
-				app.SetFocus(miscView)
-			}
-		case tcell.KeyCtrlK:
-			if title == "Mem View" {
-				app.SetFocus(codeView)
-			} else if title == "Misc View" {
-				app.SetFocus(funcList)
-			}
-		default:
-			return event
-		}
+		//v, _ := app.GetFocus().(*tview.List)
+		//title := v.GetTitle()
+		//switch event.Key() {
+		//case tcell.KeyCtrlL:
+		//	if title == "Code View" {
+		//		app.SetFocus(funcList)
+		//	} else if title == "Mem View" {
+		//		app.SetFocus(miscView)
+		//	}
+		//case tcell.KeyCtrlH:
+		//	if title == "Func View" {
+		//		app.SetFocus(codeView)
+		//	} else if title == "Misc View" {
+		//		app.SetFocus(memView)
+		//	}
+		//case tcell.KeyCtrlJ:
+		//	if title == "Code View" {
+		//		app.SetFocus(memView)
+		//	} else if title == "Func View" {
+		//		app.SetFocus(miscView)
+		//	}
+		//case tcell.KeyCtrlK:
+		//	if title == "Mem View" {
+		//		app.SetFocus(codeView)
+		//	} else if title == "Misc View" {
+		//		app.SetFocus(funcList)
+		//	}
+		//default:
+		//	return event
+		//}
 		return event
 	})
 

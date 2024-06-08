@@ -18,7 +18,6 @@ func NewElf(filePath string) *Elf {
 	if err != nil {
 		panic(err)
 	}
-	parser.Parse()
 	return &Elf{
 		elf: parser,
 	}

@@ -9,9 +9,15 @@ var (
 )
 
 func InitFuncView(app *tview.Application, funcs []string) {
-	funcList = tview.NewList().AddItem("test", "", "", func() {
+	funcList = tview.NewList()
+	for _, _func := range funcs[:len(funcs)-2] {
+		funcList.AddItem(_func, "", 0, nil)
+	}
+	_func := funcs[len(funcs)-1]
+	funcList.AddItem(_func, "", 'q', func() {
 		app.Stop()
 	})
+	funcList.SetTitle("Func View")
 }
 
 //func (f *FuncView) Build() *tview.TextView {
