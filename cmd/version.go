@@ -5,9 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/tttturtle-russ/Nyx/cfg"
-
 	"github.com/spf13/cobra"
+	"github.com/tttturtle-russ/Nyx/cfg"
 )
 
 // versionCmd represents the version command
