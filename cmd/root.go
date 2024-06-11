@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/tttturtle-russ/Nyx/internel/display"
 	"github.com/tttturtle-russ/Nyx/internel/parser"
 	"os"
 )
@@ -33,8 +34,9 @@ to quickly create a Cobra application.`,
 		}
 		//text := []string{"test", "test", "test", "test", "test", "test", "test"}
 		//funcs := []string{"func", "func", "func", "func", "func", "exit"}
-		fmt.Println(parser.NewDisassembler(args[0], false).Functions())
-		//display.InitScreen(text, funcs).Display()
+		disassembler := parser.NewDisassembler(args[0], false)
+
+		display.InitScreen(disassembler.Functions()).Display()
 	},
 }
 

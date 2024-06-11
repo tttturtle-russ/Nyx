@@ -3,6 +3,7 @@ package display
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/tttturtle-russ/Nyx/internel/parser"
 	_ "strconv"
 )
 
@@ -16,7 +17,7 @@ type Screen struct {
 }
 
 func InitScreen(
-	text, funcs []string,
+	funcs []*parser.Function,
 ) *Screen {
 	app := tview.NewApplication()
 	newPrimitive := func(text string) tview.Primitive {
@@ -27,9 +28,9 @@ func InitScreen(
 			SetTitle(text)
 		return t
 	}
-	InitFuncView(app, funcs)
-	codeView := InitCodeView(text).Build()
-
+	InitFuncList(funcs)
+	//InitCodeView(funcs[0].Code)
+	InitCodePage(funcs)
 	memView := newPrimitive("Mem View")
 	miscView := newPrimitive("Misc View")
 	grid := tview.NewGrid().
@@ -38,7 +39,7 @@ func InitScreen(
 		SetBorders(true)
 
 	// Layout for screens wider than 100 cells.
-	grid.AddItem(codeView, 0, 0, 6, 2, 0, 100, false).
+	grid.AddItem(codePage, 0, 0, 6, 2, 0, 100, false).
 		AddItem(funcList, 0, 2, 6, 1, 0, 100, true).
 		AddItem(memView, 6, 2, 4, 1, 0, 100, false).
 		AddItem(miscView, 6, 0, 4, 2, 0, 100, false)
@@ -47,45 +48,44 @@ func InitScreen(
 	// TODO: find a better way to switch focus
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if app.GetFocus() == nil {
-			app.SetFocus(funcList)
+			app.SetFocus(codePage)
 		}
-		//v, _ := app.GetFocus().(*tview.List)
-		//title := v.GetTitle()
-		//switch event.Key() {
-		//case tcell.KeyCtrlL:
-		//	if title == "Code View" {
-		//		app.SetFocus(funcList)
-		//	} else if title == "Mem View" {
-		//		app.SetFocus(miscView)
-		//	}
-		//case tcell.KeyCtrlH:
-		//	if title == "Func View" {
-		//		app.SetFocus(codeView)
-		//	} else if title == "Misc View" {
-		//		app.SetFocus(memView)
-		//	}
-		//case tcell.KeyCtrlJ:
-		//	if title == "Code View" {
-		//		app.SetFocus(memView)
-		//	} else if title == "Func View" {
-		//		app.SetFocus(miscView)
-		//	}
-		//case tcell.KeyCtrlK:
-		//	if title == "Mem View" {
-		//		app.SetFocus(codeView)
-		//	} else if title == "Misc View" {
-		//		app.SetFocus(funcList)
-		//	}
-		//default:
-		//	return event
-		//}
+		focus := app.GetFocus()
+		switch event.Key() {
+		case tcell.KeyCtrlL:
+			if focus == codePage {
+				app.SetFocus(funcList)
+			} else if focus == memView {
+				app.SetFocus(miscView)
+			}
+		case tcell.KeyCtrlH:
+			if focus == funcList {
+				app.SetFocus(codePage)
+			} else if focus == miscView {
+				app.SetFocus(memView)
+			}
+		case tcell.KeyCtrlJ:
+			if focus == codePage {
+				app.SetFocus(memView)
+			} else if focus == funcList {
+				app.SetFocus(miscView)
+			}
+		case tcell.KeyCtrlK:
+			if focus == memView {
+				app.SetFocus(codePage)
+			} else if focus == miscView {
+				app.SetFocus(funcList)
+			}
+		default:
+			return event
+		}
 		return event
 	})
 
 	return &Screen{
-		app:      app,
-		grid:     grid,
-		codeView: codeView,
+		app:  app,
+		grid: grid,
+		//codeView: codep,
 		funcView: funcList,
 	}
 }

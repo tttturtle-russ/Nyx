@@ -1,22 +1,22 @@
 package display
 
 import (
+	"fmt"
 	"github.com/rivo/tview"
+	"github.com/tttturtle-russ/Nyx/internel/parser"
 )
 
 var (
 	funcList *tview.List
 )
 
-func InitFuncView(app *tview.Application, funcs []string) {
+func InitFuncList(funcs []*parser.Function) {
 	funcList = tview.NewList()
-	for _, _func := range funcs[:len(funcs)-2] {
-		funcList.AddItem(_func, "", 0, nil)
+	for _, _func := range funcs[:len(funcs)-1] {
+		funcList.AddItem(_func.Name, fmt.Sprintf("0x%08X", _func.StartOffset), 0, func() {
+			codePage.SwitchToPage(_func.Name)
+		})
 	}
-	_func := funcs[len(funcs)-1]
-	funcList.AddItem(_func, "", 'q', func() {
-		app.Stop()
-	})
 	funcList.SetTitle("Func View")
 }
 
